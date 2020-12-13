@@ -11,7 +11,7 @@ public class Rocket : MonoBehaviour
     
 
     enum State { Alive, Dying, Transcending }
-    [SerializeField]  State state = State.Alive;
+    State state = State.Alive;
 
     // Start is called before the first frame update
     void Start()
