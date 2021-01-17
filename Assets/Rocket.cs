@@ -5,6 +5,7 @@ public class Rocket : MonoBehaviour
 {
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
+    [SerializeField] float changeLevelTime = 2f;
 
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip deathClip;
@@ -16,10 +17,12 @@ public class Rocket : MonoBehaviour
 
     AudioSource audioData;
     Rigidbody rigidBody;
-    
+
+    bool collisionsDisabled = false;
 
     enum State { Alive, Dying, Transcending }
     State state = State.Alive;
+
 
     // Start is called before the first frame update
     void Start()
@@ -31,37 +34,57 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+
         if (state == State.Alive)
         {
-        RespondToRotateInput();
-        RespondToThrustInput();
-        }       
+            RespondToRotateInput();
+            RespondToThrustInput();
+        }
+        if(Debug.isDebugBuild)
+        {
+            RespondToDebugKey();
+        }        
+    }
+
+    void RespondToDebugKey()
+    {
+        if (Input.GetKeyDown(KeyCode.L)) 
+        {
+            LoadNextLevel();
+        }
+
+        if (Input.GetKey(KeyCode.C)) // cam thrust while rotating
+        {
+            collisionsDisabled = !collisionsDisabled;
+        }
+
+        
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive) { return; } // ignore collisions when dead
+        if (state != State.Alive || collisionsDisabled) { return; } // ignore collisions when dead
 
         switch (collision.gameObject.tag)
         {
-            case "Friendly":
-                print("ok");
+            case "Friendly":               
                 break;
             case "Finish":
                 StartSuccesSequence();
                 break;
-            default:
+            default:               
                 StartDeathSequence();
                 break;
         }
     }
     private void StartDeathSequence()
-    {
+    {       
         state = State.Dying;
         audioData.Stop();
         audioData.PlayOneShot(deathClip);
         deathClipParticle.Play();
-        Invoke("LoadFirstLevel", 1f);
+        Invoke("LoadFirstLevel", changeLevelTime);
     }
     private void StartSuccesSequence()
     {
@@ -69,11 +92,17 @@ public class Rocket : MonoBehaviour
         audioData.Stop();
         audioData.PlayOneShot(levelFinished);
         levelFinishedParticle.Play();
-        Invoke("LoadNextLevel", 1f);
+        Invoke("LoadNextLevel", changeLevelTime);
     }
     private void LoadNextLevel()
     {
-        SceneManager.LoadScene(1);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;                      
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex = 0;
+        }
+        SceneManager.LoadScene(nextSceneIndex);
     }
     private void LoadFirstLevel()
     {

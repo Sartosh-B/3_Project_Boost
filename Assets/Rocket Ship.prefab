@@ -259,6 +259,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rcsThrust: 200
   mainThrust: 10
+  changeLevelTime: 2
   mainEngine: {fileID: 8300000, guid: d60eca6b2bbefec44b7efd443ee4b48a, type: 3}
   deathClip: {fileID: 8300000, guid: c15bec34b9fc1f84c8f02757a354eb11, type: 3}
   levelFinished: {fileID: 8300000, guid: 2704cdc73e9bb4448939176854c455b3, type: 3}
