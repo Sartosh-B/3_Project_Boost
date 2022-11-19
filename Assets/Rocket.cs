@@ -15,6 +15,8 @@ public class Rocket : MonoBehaviour
     [SerializeField] ParticleSystem deathClipParticle;
     [SerializeField] ParticleSystem levelFinishedParticle;
 
+    
+
     AudioSource audioData;
     Rigidbody rigidBody;
 
@@ -27,14 +29,16 @@ public class Rocket : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
         rigidBody = GetComponent<Rigidbody>();
-        audioData = GetComponent<AudioSource>();      
+        audioData = GetComponent<AudioSource>();
+       
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+       
 
         if (state == State.Alive)
         {
@@ -72,12 +76,18 @@ public class Rocket : MonoBehaviour
                 break;
             case "Finish":
                 StartSuccesSequence();
+                Debug.Log("aksdasdasd");
+                break;
+            case "ToTransport":
+                GameObject.Find("BoxToTransport1").GetComponent<AttachBoxToObject>().AttachBox();
                 break;
             default:               
                 StartDeathSequence();
                 break;
         }
     }
+
+   
     private void StartDeathSequence()
     {       
         state = State.Dying;
